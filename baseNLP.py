@@ -1,10 +1,10 @@
 import pandas as pd
 
-df_yelp = pd.read_table('C:/Users/prana/Desktop/SDS/sentiment labelled sentences/yelp_labelled.txt')
+df_yelp = pd.read_table('sentimentLabeledSentences/yelp_labelled.txt')
 
-df_imdb = pd.read_table('C:/Users/prana/Desktop/SDS/sentiment labelled sentences/imdb_labelled.txt')
+df_imdb = pd.read_table('sentimentLabeledSentences/imdb_labelled.txt')
 
-df_amz = pd.read_table('C:/Users/prana/Desktop/SDS/sentiment labelled sentences/amazon_cells_labelled.txt')
+df_amz = pd.read_table('sentimentLabeledSentences/amazon_cells_labelled.txt')
 
 frames = [df_yelp,df_imdb,df_amz]
 
