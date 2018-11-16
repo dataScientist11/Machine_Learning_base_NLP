@@ -1,154 +1,224 @@
+import dask.dataframe as dd
+#pip install dask[complete] toolz cloudpickle
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import norm
+from sklearn.preprocessing import StandardScaler
+from scipy import stats
+import warnings
+warnings.filterwarnings('ignore')
+import seaborn as sns
+from sklearn.preprocessing import LabelEncoder
+from wordcloud import WordCloud,STOPWORDS
+from collections import Counter
 
-df_yelp = pd.read_table('sentimentLabeledSentences/yelp_labelled.txt')
+data = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/appceleratorstudio.csv')
 
-df_imdb = pd.read_table('sentimentLabeledSentences/imdb_labelled.txt')
+data2 = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/mesos.csv')
 
-df_amz = pd.read_table('sentimentLabeledSentences/amazon_cells_labelled.txt')
+data3 = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/springxd.csv')
 
-frames = [df_yelp,df_imdb,df_amz]
+data4 = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/titanium.csv')
 
-for colname in frames:
-    colname.columns = ['Message','Target']
+data = data.append(data2,ignore_index = True)
+
+data = data.append(data3,ignore_index = True)
+
+data = data.append(data4,ignore_index = True)
+
+data.shape
+
+data = data.dropna(axis = 0)
+
+title = data["title"]
+
+points = data["storypoint"]
+
+desc = data["description"]
+
+pointslist = []
+pointslist = points
+titlelist = []
+titlelist = title
+desclist = []
+desclist = desc
+
+'''
+j = 0 
+while j < m:
+    special_list3.append([special_list1[j],special_list2[j]])
+    j = j + 1
+'''
+#####################Genral Wordcloud
+str1 = ''.join(str(genral_list))
+
+stopwords= set(STOPWORDS)
+cloud = WordCloud(max_words=50,width=1600,height=800,stopwords=stopwords).generate(str1)
 
 
-#df_imdb.columns
-for colname in frames:
-    print(colname.columns)
+plt.figure(figsize=(20,10),facecolor='k')
+plt.imshow(cloud)
+plt.axis("off")
+plt.tight_layout(pad=0)
+plt.show(cloud)
+
+
+##################################################
+genral_list = []
+
+genral_list = [list(pair) for pair in zip(titlelist,desclist)]
+
+size = len(genral_list)
+
+l1 = ['{html}','<div>','<p>','</pre>','<code>','}','&lt','&gt','</div>']
+count = []
+k = 0
+while k < size:
+    s = str(genral_list[k])
+    words = s.split()    
+    words = [q for q in words if q not in l1]
+    size_words = len(words)
+    count.append(size_words)
+    k = k + 1
+
+len(count)
+
+genral_list[58]
+count[58]
+
+data["count"] = count
+
+data.shape
+     
+words = [q for q in words if q not in l1]
     
-keys = ['Yelp','IMDB','Amazon']
+    
+d1 = data[data['storypoint'] >= 13]
 
-df = pd.concat(frames,keys=keys)
+d1['storypoint']
 
-df.shape
+#data['count'].corr(data['storypoint'])    
 
-df.head()
+d1['count'].corr(d1['storypoint'])    #length of title and description combined has 10.5% correlation with story points(>=13)
 
-df.to_csv('C:/Users/prana/Desktop/SDS/sentimentdataset1.csv')
+len(genral_list)#length is 9616
 
-df.columns
-
-df.isnull().sum()
-
-#conda install -c conda-forge spacy=1.8.2
-#python -m spacy download en
-
-import spacy
-
-from spacy.lang.en.stop_words import STOP_WORDS
-
-nlp = spacy.load('en')
-
+####################################################
 stopwords = list(STOP_WORDS)
-
-docx = nlp("This is how John Walker was walking. He was also running beside the lawn")
-
-for word in docx:
-    print(word.text,"Lemma =>",word.lemma_)
-
-for word in docx:
-    if word.lemma_ != "-PRON-":
-        print(word.lemma_.lower().strip())
-
-
-[word.lemma_.lower().strip() if word.lemma_ != "-PRON-" else word.lower_ for word in docx]
-
-for word in docx:
-    if word.is_stop == False and not word.ispunct:
-        print(word)
-        
-[word for word in docx if word.is_stop == False and not word.is_punct]
-
-
 import string
 punctuations = string.punctuation
 
-from spacy.lang.en import English
-parser = English()
-
-def spacy_tokenizer(sentence):
-    mytokens = parser(sentence)
-    mytokens = [word.lemma_.lower().strip() if word.lemma_ != "-PRON-" else word.lower_ for word in mytokens]
-    mytokens = [word for word in mytokens if word not in stopwords and word not in punctuations]
-    return mytokens
-
-
-
-from sklearn.feature_extraction.text import CountVectorizer, TfidVectorizer
-from sklearn.metrics import accuracy_score
-from sklearn.base import TransformerMixin
-from sklearn.pipeline import Pipeline
-from sklearn.svm import LinearSVC
-
-
-class predictors(TransformerMixin):
-    def transform(self,X,**transform_params):
-        return[clean_text(text) for text in X]
-    def fit(self, X, y=None, **fit_params):
-        return self
-    def get_params(self,deep=True):
-        return{}
-
-def clean_text(text):
-    return text.strip().lower()
-
-vectorizer = Countvectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
-classifier = LinearSVC()
-
-tfidvectorizer = TfidVectorizer(tokenizer = spacy_tokenizer)
-
-from sklearn.model_selection import train_test_split
-
-X = df['Message']
-ylabels = df['Target']
-
-
-X_train, X_test, y_train, y_test = train_test_split(X,ylabels,test_size=0.2,)
+v = 0
+most_freq = []
+most_freq_count = []
+for g in genral_list:
+    temp1 = []
+    temp = str(g)
+    temp = temp.lower().split()
+    for t in temp:
+        t = t.replace("{html}","")
+        t = t.replace("<div>","")
+        t = t.replace("<p>","")
+        t = t.replace("</pre>","")
+        t = t.replace("}","")
+        t = t.replace("&lt","")
+        t = t.replace("&gt","")
+        t = t.replace("</code>","")
+        t = t.replace("</p>","")
+        t = t.replace("{","")
+        t = t.replace("[","")
+        t = t.replace("]","")
+        t = t.replace("<pre>","")
+        t = t.replace("<code>","") 
+        t = t.replace("</div>","")
+        t = t.replace(";","")
+        t = t.replace("(","")
+        t = t.replace(")","")
+        t = t.replace(",","")
+        t = t.replace(":","")
+        t = t.replace("'","")
+        t = t.replace("''","")
+        if t not in stopwords and punctuations:
+            temp1.append(t)
+    #print(temp1)
+    #print(temp)
+    #break
+    count = Counter(temp1)
+    most_occur = count.most_common(4)
         
+    #print(most_occur)
+    if most_occur[0][0] == '' or most_occur[0][0] == '*' or most_occur[0][0] == '=' or most_occur[0][0] == '-':
+       most_freq.append(most_occur[1][0])
+       most_freq_count.append(most_occur[1][1])
+    else:
+       most_freq.append(most_occur[0][0])        
+       most_freq_count.append(most_occur[0][1])
+    print("\nThe",v,"th element===>",most_freq[v],"and count is",most_freq_count[v])
+    v = v + 1
 
-pipe = Pipeline([("cleaner",predictors()),
-                 ('vectorizer',vectorizer),
-                 ('classifier',classifier)])
+cnt = Counter(most_freq)
+freq = cnt.most_common(20)
+print(freq)
+
+'''most_freq list will hold most freq words in a user story and most_freq_count will hold count of respective frequent keyword in that story''' 
+
+
+'''
+Following keywords occured frequetly in many user stories so they are very important
+[('code', 208), ('error', 180), ('android', 180), ('add', 178), 
+('module', 171), ('windows', 156), ('studio', 144), ('project', 121), 
+('job', 112), ('app', 98), ('create', 96), ('update', 95), 
+('=', 88), ('titanium', 84), ('support', 84), ('ios', 80), ('build', 77), 
+('sdk', 69), ('blackberry', 61), ('file', 61)]'''
+
+
+##################################Using the count of these words in all user stories to correlate with story points.
+temp_code = []
+for gen in genral_list:
+    count = 0
+    temp3 = str(gen)
+    temp3 = temp3.lower().split()
+    for t in temp3:
+        t = t.replace("{html}","")
+        t = t.replace("<div>","")
+        t = t.replace("<p>","")
+        t = t.replace("</pre>","")
+        t = t.replace("}","")
+        t = t.replace("&lt","")
+        t = t.replace("&gt","")
+        t = t.replace("</code>","")
+        t = t.replace("</p>","")
+        t = t.replace("{","")
+        t = t.replace("[","")
+        t = t.replace("]","")
+        t = t.replace("<pre>","")
+        t = t.replace("<code>","") 
+        t = t.replace("</div>","")
+        t = t.replace(";","")
+        t = t.replace("(","")
+        t = t.replace(")","")
+        t = t.replace(",","")
+        t = t.replace(":","")
+        t = t.replace("'","")
+        t = t.replace("''","")
+        if t not in stopwords and punctuations:
+            if t == "code":
+                count = count + 1
+    #print(count)
     
-pipe.fit(X_train,y_train)
-
-sample_prediction = pipe.predict(X_test)
-
-for(sample,pred) in zip(X_test,sample_prediction):
-    print(sample,"Predicition=>",pred)
+    temp_code.append(count)
+len(temp_code)
+len(points)
 
 
-print("Accuracy: ", pipe.score(X_test,y_test))
-print("Accuracy: ", pipe.score(X_test,sample_prediction))
+data["code_count"] = temp_code
 
+data['count'].corr(data['storypoint'])
 
-print("Accuracy: ", pipe.score(X_train,y_train))
+d1 = data[data['storypoint'] > 13]
 
-pipe.predict(["This was a great movie"])
-
-example = ["I do enjoy my job",
-           "What a poor product!, I will have to get a new one",
-           "I feel amazing!"]
-
-pipe.predict(example)
+d1['code_count'].corr(d1['storypoint'])
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-'''
-mysents = []
-
-for i in df_clean.Message:
-    docx = nlp(i)
-    procs = [word for word in docx if word.is_stop != True and not word.is]
-'''
