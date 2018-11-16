@@ -13,13 +13,13 @@ from sklearn.preprocessing import LabelEncoder
 from wordcloud import WordCloud,STOPWORDS
 from collections import Counter
 
-data = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/appceleratorstudio.csv')
+data = pd.read_csv('data/appceleratorstudio.csv')
 
-data2 = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/mesos.csv')
+data2 = pd.read_csv('data/mesos.csv')
 
-data3 = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/springxd.csv')
+data3 = pd.read_csv('data/springxd.csv')
 
-data4 = pd.read_csv('C:/Users/prana/Desktop/SDS/sample/titanium.csv')
+data4 = pd.read_csv('data/titanium.csv')
 
 data = data.append(data2,ignore_index = True)
 
